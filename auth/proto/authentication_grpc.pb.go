@@ -24,7 +24,7 @@ const (
 	Authentication_Refresh_FullMethodName     = "/auth.Authentication/Refresh"
 	Authentication_Logout_FullMethodName      = "/auth.Authentication/Logout"
 	Authentication_VerifyToken_FullMethodName = "/auth.Authentication/VerifyToken"
-	Authentication_UserInfo_FullMethodName    = "/auth.Authentication/UserInfo"
+	Authentication_AccountInfo_FullMethodName = "/auth.Authentication/AccountInfo"
 	Authentication_ParseToken_FullMethodName  = "/auth.Authentication/ParseToken"
 )
 
@@ -37,7 +37,7 @@ type AuthenticationClient interface {
 	Refresh(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*RefreshResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 	VerifyToken(ctx context.Context, in *VerifyTokenRequest, opts ...grpc.CallOption) (*VerifyTokenResponse, error)
-	UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
+	AccountInfo(ctx context.Context, in *AccountInfoRequest, opts ...grpc.CallOption) (*AccountInfoResponse, error)
 	ParseToken(ctx context.Context, in *ParseTokenRequest, opts ...grpc.CallOption) (*ParseTokenResponse, error)
 }
 
@@ -99,10 +99,10 @@ func (c *authenticationClient) VerifyToken(ctx context.Context, in *VerifyTokenR
 	return out, nil
 }
 
-func (c *authenticationClient) UserInfo(ctx context.Context, in *UserInfoRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
+func (c *authenticationClient) AccountInfo(ctx context.Context, in *AccountInfoRequest, opts ...grpc.CallOption) (*AccountInfoResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UserInfoResponse)
-	err := c.cc.Invoke(ctx, Authentication_UserInfo_FullMethodName, in, out, cOpts...)
+	out := new(AccountInfoResponse)
+	err := c.cc.Invoke(ctx, Authentication_AccountInfo_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ type AuthenticationServer interface {
 	Refresh(context.Context, *RefreshRequest) (*RefreshResponse, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	VerifyToken(context.Context, *VerifyTokenRequest) (*VerifyTokenResponse, error)
-	UserInfo(context.Context, *UserInfoRequest) (*UserInfoResponse, error)
+	AccountInfo(context.Context, *AccountInfoRequest) (*AccountInfoResponse, error)
 	ParseToken(context.Context, *ParseTokenRequest) (*ParseTokenResponse, error)
 	mustEmbedUnimplementedAuthenticationServer()
 }
@@ -155,8 +155,8 @@ func (UnimplementedAuthenticationServer) Logout(context.Context, *LogoutRequest)
 func (UnimplementedAuthenticationServer) VerifyToken(context.Context, *VerifyTokenRequest) (*VerifyTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyToken not implemented")
 }
-func (UnimplementedAuthenticationServer) UserInfo(context.Context, *UserInfoRequest) (*UserInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UserInfo not implemented")
+func (UnimplementedAuthenticationServer) AccountInfo(context.Context, *AccountInfoRequest) (*AccountInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AccountInfo not implemented")
 }
 func (UnimplementedAuthenticationServer) ParseToken(context.Context, *ParseTokenRequest) (*ParseTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ParseToken not implemented")
@@ -272,20 +272,20 @@ func _Authentication_VerifyToken_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Authentication_UserInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserInfoRequest)
+func _Authentication_AccountInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AccountInfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthenticationServer).UserInfo(ctx, in)
+		return srv.(AuthenticationServer).AccountInfo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Authentication_UserInfo_FullMethodName,
+		FullMethod: Authentication_AccountInfo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthenticationServer).UserInfo(ctx, req.(*UserInfoRequest))
+		return srv.(AuthenticationServer).AccountInfo(ctx, req.(*AccountInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -336,8 +336,8 @@ var Authentication_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Authentication_VerifyToken_Handler,
 		},
 		{
-			MethodName: "UserInfo",
-			Handler:    _Authentication_UserInfo_Handler,
+			MethodName: "AccountInfo",
+			Handler:    _Authentication_AccountInfo_Handler,
 		},
 		{
 			MethodName: "ParseToken",

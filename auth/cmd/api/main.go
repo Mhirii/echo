@@ -27,7 +27,7 @@ func main() {
 	}
 
 	slog.Info("Running Migrations")
-	if db.Migrate(database.Users{}) != nil {
+	if db.Migrate(database.Accounts{}) != nil {
 		slog.Error(err)
 	}
 

@@ -9,7 +9,7 @@ service Authentication {
 	rpc Refresh (RefreshRequest) returns (RefreshResponse) {}
 	rpc Logout (LogoutRequest) returns (LogoutResponse) {}
 	rpc VerifyToken (VerifyTokenRequest) returns (VerifyTokenResponse) {}
-	rpc UserInfo (UserInfoRequest) returns (UserInfoResponse) {}
+	rpc AccountInfo (AccountInfoRequest) returns (AccountInfoResponse) {}
 	rpc ParseToken (ParseTokenRequest) returns (ParseTokenResponse) {}
 }
 
@@ -62,10 +62,10 @@ message VerifyTokenResponse {
 	bool valid = 1;
 }
 
-message UserInfoRequest {
+message AccountInfoRequest {
 	string id = 1;
 }
-message UserInfoResponse {
+message AccountInfoResponse {
 	string id = 1;
 	string username = 2;
 	optional string email = 3;

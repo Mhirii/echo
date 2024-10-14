@@ -53,7 +53,7 @@ func (s *Server) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginRespo
 		return nil, err
 	}
 
-	dbUser := database.Users{
+	dbUser := database.Accounts{
 		Username: user.Username,
 	}
 
@@ -110,20 +110,20 @@ func (s *Server) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.Refres
 	}, nil
 }
 
-func (s *Server) UserInfo(ctx context.Context, in *pb.UserInfoRequest) (*pb.UserInfoResponse, error) {
+func (s *Server) AccountInfo(ctx context.Context, in *pb.AccountInfoRequest) (*pb.AccountInfoResponse, error) {
 	u, err := uuid.Parse(in.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	user := database.Users{ID: u}
+	user := database.Accounts{ID: u}
 
 	err = user.GetByID()
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.UserInfoResponse{
+	return &pb.AccountInfoResponse{
 		Id:       user.ID.String(),
 		Username: user.Username,
 		Email:    user.Email,

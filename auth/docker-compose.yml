@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   psql:
@@ -10,7 +10,4 @@ services:
     ports:
       - "${DB_PORT}:5432"
     volumes:
-      - psql_volume:/var/lib/postgresql/data
-
-volumes:
-  psql_volume:
+      - ../.volumes/test_postgres:/var/lib/postgresql/data
