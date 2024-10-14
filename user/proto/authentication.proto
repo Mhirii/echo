@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package auth;
+option go_package = "auth/proto";
+
+service Authentication {
+  rpc Signup (SignupRequest) returns (SignupResponse) {}
+	rpc Login (LoginRequest) returns (LoginResponse) {}
+	rpc Refresh (RefreshRequest) returns (RefreshResponse) {}
+	rpc Logout (LogoutRequest) returns (LogoutResponse) {}
+	rpc VerifyToken (VerifyTokenRequest) returns (VerifyTokenResponse) {}
+	rpc AccountInfo (AccountInfoRequest) returns (AccountInfoResponse) {}
+	rpc ParseToken (ParseTokenRequest) returns (ParseTokenResponse) {}
+}
+
+message Tokens {
+	string access = 1;
+	string refresh = 2;
+}
+
+message SignupRequest {
+	string username = 1;
+	optional string email = 2;
+	string password = 3;
+}
+message SignupResponse {
+	string id = 1;
+	string username = 2;
+	optional string email = 3;
+	Tokens tokens = 4;
+}
+
+message LoginRequest {
+		string username = 1;
+		string password = 2;
+}
+message LoginResponse {
+	string id = 1;
+	string username = 2;
+	optional string email = 3;
+	Tokens tokens = 4;
+}
+
+message RefreshRequest {
+	string refresh = 1;
+}
+message RefreshResponse {
+	string access = 1;
+}
+
+message LogoutRequest {
+	string refresh = 1;
+}
+message LogoutResponse {
+	bool success = 1;
+}
+
+message VerifyTokenRequest {
+	string token = 1;
+}
+message VerifyTokenResponse {
+	bool valid = 1;
+}
+
+message AccountInfoRequest {
+	string id = 1;
+}
+message AccountInfoResponse {
+	string id = 1;
+	string username = 2;
+	optional string email = 3;
+}
+
+message ParseTokenRequest {
+	string token = 1;
+}
+
+message ParseTokenResponse {
+	string id = 1;
+	string username = 2;
+	optional string email = 3;
+	map<string, string> data = 4;
+}
