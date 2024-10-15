@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"user/internal/database"
 	pb "user/proto"
 
 	"github.com/google/uuid"
@@ -41,41 +40,15 @@ func (s *Server) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.UpdateRe
 	if err != nil {
 		return nil, err
 	}
-	user := database.User{
-		AccountID: in.AccountId,
-		ID:        userUUID,
-	}
 
-	if in.FirstName != nil {
-		user.FirstName = *in.FirstName
-	}
-
-	if in.LastName != nil {
-		user.LastName = *in.LastName
-	}
-
-	if in.Email != nil && *in.Email != "" {
-		user.Email = in.Email
-	}
-
-	if in.Phone != nil && *in.Phone != "" {
-		user.Phone = in.Phone
-	}
+	user := convUpdateRequest(in, userUUID)
 
 	err = user.UpdatePartial()
 	if err != nil {
 		return nil, err
 	}
 
-	res := &pb.UpdateResponse{
-		AccountId: user.AccountID,
-		UserId:    user.ID.String(),
-		Username:  user.Username,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Email:     user.Email,
-		Phone:     user.Phone,
-	}
+	res := convUpdateResponse(&user)
 
 	return res, nil
 }
