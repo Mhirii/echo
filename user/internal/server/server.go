@@ -13,6 +13,7 @@ import (
 
 type Server struct {
 	pb.UserServer
+	AuthAddr string
 }
 
 func (s *Server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
