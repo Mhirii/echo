@@ -82,6 +82,7 @@ func (u *User) toMapInterface() map[string]interface{} {
 		"id":         u.ID,
 		"account_id": u.AccountID,
 	}
+
 	v := reflect.ValueOf(*u)
 	typeOfU := v.Type()
 
@@ -93,8 +94,15 @@ func (u *User) toMapInterface() map[string]interface{} {
 			continue
 		}
 
-		if field.Kind() == reflect.String && field.String() != "" {
-			userMap[lib.ToSnakeCase(fieldName)] = field.String()
+		switch field.Kind() {
+		case reflect.String:
+			if field.String() != "" {
+				userMap[lib.ToSnakeCase(fieldName)] = field.String()
+			}
+		case reflect.Ptr:
+			if !field.IsNil() && field.Elem().Kind() == reflect.String {
+				userMap[lib.ToSnakeCase(fieldName)] = field.Elem().String()
+			}
 		}
 	}
 
