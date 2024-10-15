@@ -16,26 +16,9 @@ type Server struct {
 }
 
 func (s *Server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
-	userInput := database.User{
-		AccountID: in.AccountId,
-		Username:  in.Username,
-		FirstName: in.FirstName,
-		LastName:  in.LastName,
-	}
+	user := convSignupRequest(in)
 
-	if in.Email != nil && *in.Email != "" {
-		userInput.Email = in.Email
-	} else {
-		userInput.Email = nil
-	}
-
-	if in.Phone != nil && *in.Phone != "" {
-		userInput.Phone = in.Phone
-	} else {
-		userInput.Phone = nil
-	}
-
-	err := userInput.Create()
+	err := user.Create()
 	if err != nil {
 		return nil, err
 	}
@@ -47,11 +30,11 @@ func (s *Server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 		LastName:  in.LastName,
 	}
 
-	if userInput.Email != nil {
-		res.Email = userInput.Email
+	if user.Email != nil {
+		res.Email = user.Email
 	}
-	if userInput.Phone != nil {
-		res.Phone = userInput.Phone
+	if user.Phone != nil {
+		res.Phone = user.Phone
 	}
 
 	return res, nil
