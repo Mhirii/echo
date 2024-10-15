@@ -1,0 +1,71 @@
+name: Go Auth Service CI
+
+on:
+  push:
+    paths:
+      - './auth/**'
+    branches:
+      - main
+  pull_request:
+    paths:
+      - './auth/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Install dependencies
+        run: |
+          cd ./auth
+          go mod download
+
+      - name: Lint the code
+        run: |
+          cd ./auth
+          go install golang.org/x/lint/golint@latest
+          golint ./... | tee lint-results.txt
+        continue-on-error: true
+
+      - name: Upload lint results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: lint-results
+          path: ./auth/lint-results.txt
+
+
+      - name: Run tests
+        run: |
+          cd ./auth
+          go test -v ./...
+
+      - name: Build the service
+        run: |
+          cd ./auth
+          go build -o main cmd/api/main.go
+
+      - name: Upload the binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: auth-service-binary
+          path: ./auth/main
+
