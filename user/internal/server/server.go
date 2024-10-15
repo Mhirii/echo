@@ -31,19 +31,7 @@ func (s *Server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 		return nil, err
 	}
 
-	res := &pb.CreateResponse{
-		AccountId: user.AccountID,
-		Username:  user.Username,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-	}
-
-	if user.Email != nil {
-		res.Email = user.Email
-	}
-	if user.Phone != nil {
-		res.Phone = user.Phone
-	}
+	res := convSignupResponse(&user)
 
 	return res, nil
 }

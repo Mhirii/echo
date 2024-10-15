@@ -27,3 +27,20 @@ func convSignupRequest(sr *pb.CreateRequest, accountId string) database.User {
 
 	return user
 }
+
+func convSignupResponse(user *database.User) *pb.CreateResponse {
+	res := &pb.CreateResponse{
+		AccountId: user.AccountID,
+		Username:  user.Username,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+	}
+	if user.Email != nil {
+		res.Email = user.Email
+	}
+	if user.Phone != nil {
+		res.Phone = user.Phone
+	}
+
+	return res
+}
