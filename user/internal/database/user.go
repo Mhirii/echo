@@ -1,6 +1,10 @@
 package database
 
 import (
+	"reflect"
+
+	"user/internal/lib"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -23,6 +27,12 @@ func (u *User) Create() error {
 
 func (u *User) Update() error {
 	res := dbInstance.db.Save(&u)
+	return res.Error
+}
+
+func (u *User) UpdatePartial() error {
+	update := u.toMapInterface()
+	res := dbInstance.db.Model(&u).Updates(update).Select("*")
 	return res.Error
 }
 
@@ -65,4 +75,28 @@ func FindByAccountId(accountId string) (User, error) {
 		return user, res.Error
 	}
 	return user, nil
+}
+
+func (u *User) toMapInterface() map[string]interface{} {
+	userMap := map[string]interface{}{
+		"id":         u.ID,
+		"account_id": u.AccountID,
+	}
+	v := reflect.ValueOf(*u)
+	typeOfU := v.Type()
+
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		fieldName := typeOfU.Field(i).Name
+
+		if fieldName == "ID" || fieldName == "AccountID" {
+			continue
+		}
+
+		if field.Kind() == reflect.String && field.String() != "" {
+			userMap[lib.ToSnakeCase(fieldName)] = field.String()
+		}
+	}
+
+	return userMap
 }
