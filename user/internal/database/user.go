@@ -52,7 +52,7 @@ func FindAll() ([]User, error) {
 
 func FindById(id string) (User, error) {
 	user := User{}
-	res := dbInstance.db.Where("id = ?", id).First(user)
+	res := dbInstance.db.Where("id = ?", id).First(&user)
 	if res.Error != nil {
 		return user, res.Error
 	}
@@ -61,7 +61,7 @@ func FindById(id string) (User, error) {
 
 func FindByUsername(username string) (User, error) {
 	user := User{}
-	res := dbInstance.db.Where("username = ?", username).First(user)
+	res := dbInstance.db.Where("username = ?", username).First(&user)
 	if res.Error != nil {
 		return user, res.Error
 	}
@@ -70,7 +70,7 @@ func FindByUsername(username string) (User, error) {
 
 func FindByAccountId(accountId string) (User, error) {
 	user := User{}
-	res := dbInstance.db.Where("account_id = ?", accountId).First(user)
+	res := dbInstance.db.Where("account_id = ?", accountId).First(&user)
 	if res.Error != nil {
 		return user, res.Error
 	}
