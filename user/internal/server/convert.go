@@ -5,9 +5,9 @@ import (
 	pb "user/proto"
 )
 
-func convSignupRequest(sr *pb.CreateRequest) database.User {
+func convSignupRequest(sr *pb.CreateRequest, accountId string) database.User {
 	user := database.User{
-		AccountID: sr.AccountId,
+		AccountID: accountId,
 		Username:  sr.Username,
 		FirstName: sr.FirstName,
 		LastName:  sr.LastName,

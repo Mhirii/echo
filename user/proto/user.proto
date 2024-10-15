@@ -11,7 +11,7 @@ service User{
 }
 
 message CreateRequest {
-	string accountId = 1;
+	string token = 1;
 	string username = 2;
 	string firstName = 3;
 	string lastName = 4;

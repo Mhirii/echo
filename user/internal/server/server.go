@@ -17,18 +17,25 @@ type Server struct {
 }
 
 func (s *Server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
-	user := convSignupRequest(in)
+	authClient := &AuthClient{addr: &s.AuthAddr}
+	tokenData, err := authClient.ParseToken(ctx, in.Token)
+	if err != nil {
+		slog.Error(err)
+		return nil, err
+	}
 
-	err := user.Create()
+	user := convSignupRequest(in, tokenData.Id)
+
+	err = user.Create()
 	if err != nil {
 		return nil, err
 	}
 
 	res := &pb.CreateResponse{
-		AccountId: in.AccountId,
-		Username:  in.Username,
-		FirstName: in.FirstName,
-		LastName:  in.LastName,
+		AccountId: user.AccountID,
+		Username:  user.Username,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
 	}
 
 	if user.Email != nil {
