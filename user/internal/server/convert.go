@@ -87,3 +87,21 @@ func convUpdateResponse(user *database.User) *pb.UpdateResponse {
 	}
 	return res
 }
+
+func convSelfRequest(accountId string) database.User {
+	user := database.User{
+		AccountID: accountId,
+	}
+	return user
+}
+
+func convSelfResponse(user database.User) *pb.SelfResponse {
+	return &pb.SelfResponse{
+		AccountId: user.AccountID,
+		UserId:    user.ID.String(),
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		Phone:     user.Phone,
+	}
+}

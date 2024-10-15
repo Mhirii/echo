@@ -47,7 +47,8 @@ message UpdateResponse {
 }
 
 message ReadRequest {
-	optional string userId = 1;
+	string token = 1;
+	optional string userId = 2;
 	optional string username = 3;
 }
 message ReadResponse {
@@ -60,7 +61,7 @@ message ReadResponse {
 }
 
 message SelfRequest {
-	string userId = 1;
+	string token = 1;
 }
 message SelfResponse {
 	string accountId = 1;

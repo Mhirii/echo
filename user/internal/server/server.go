@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"user/internal/database"
 	pb "user/proto"
 
 	"github.com/google/uuid"
@@ -67,6 +68,19 @@ func (s *Server) Read(ctx context.Context, in *pb.ReadRequest) (*pb.ReadResponse
 }
 
 func (s *Server) Self(ctx context.Context, in *pb.SelfRequest) (*pb.SelfResponse, error) {
-	slog.Info("Not implemented")
-	return nil, errors.New("Self not implemented")
+	authClient := &AuthClient{addr: &s.AuthAddr}
+	tokenData, err := authClient.ParseToken(ctx, in.Token)
+	if err != nil {
+		slog.Error(err)
+		return nil, err
+	}
+
+	user, err := database.FindByAccountId(tokenData.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	res := convSelfResponse(user)
+
+	return res, nil
 }
