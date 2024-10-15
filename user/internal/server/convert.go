@@ -47,24 +47,24 @@ func convSignupResponse(user *database.User) *pb.CreateResponse {
 	return res
 }
 
-func convUpdateRequest(ur *pb.UpdateRequest, userUUID uuid.UUID) database.User {
+func convUpdateRequest(in *pb.UpdateRequest, accountId string, userUUID uuid.UUID) database.User {
 	user := database.User{
-		AccountID: ur.AccountId,
+		AccountID: accountId,
 		ID:        userUUID,
 	}
-	if ur.FirstName != nil {
-		user.FirstName = *ur.FirstName
+	if in.FirstName != nil {
+		user.FirstName = *in.FirstName
 	}
-	if ur.LastName != nil {
-		user.LastName = *ur.LastName
+	if in.LastName != nil {
+		user.LastName = *in.LastName
 	}
-	if ur.Email != nil && *ur.Email != "" {
-		user.Email = ur.Email
+	if in.Email != nil && *in.Email != "" {
+		user.Email = in.Email
 	} else {
 		user.Email = nil
 	}
-	if ur.Phone != nil && *ur.Phone != "" {
-		user.Phone = ur.Phone
+	if in.Phone != nil && *in.Phone != "" {
+		user.Phone = in.Phone
 	} else {
 		user.Phone = nil
 	}

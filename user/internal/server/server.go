@@ -36,12 +36,20 @@ func (s *Server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 }
 
 func (s *Server) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.UpdateResponse, error) {
-	userUUID, err := uuid.Parse(in.UserId)
+	authClient := &AuthClient{addr: &s.AuthAddr}
+	tokenData, err := authClient.ParseToken(ctx, in.Token)
 	if err != nil {
+		slog.Error(err)
 		return nil, err
 	}
 
-	user := convUpdateRequest(in, userUUID)
+	userUUID, err := uuid.Parse(in.UserId)
+	if err != nil {
+		slog.Error(err)
+		return nil, err
+	}
+
+	user := convUpdateRequest(in, tokenData.Id, userUUID)
 
 	err = user.UpdatePartial()
 	if err != nil {

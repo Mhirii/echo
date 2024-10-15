@@ -29,7 +29,7 @@ message CreateResponse {
 }
 
 message UpdateRequest {
-	string accountId = 1;
+	string token = 1;
 	string userId = 2;
 	optional string firstName = 3;
 	optional string lastName = 4;
