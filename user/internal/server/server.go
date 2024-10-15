@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"user/internal/database"
 	pb "user/proto"

@@ -32,7 +32,7 @@ func (u *User) Update() error {
 
 func (u *User) UpdatePartial() error {
 	update := u.toMapInterface()
-	res := dbInstance.db.Model(&u).Updates(update).Select("*")
+	res := dbInstance.db.Model(&u).Updates(update)
 	return res.Error
 }
 
