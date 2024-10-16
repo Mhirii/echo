@@ -62,9 +62,14 @@ func (s *Server) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.UpdateRe
 	return res, nil
 }
 
-func (s *Server) Read(ctx context.Context, in *pb.ReadRequest) (*pb.ReadResponse, error) {
+func (s *Server) InfoById(ctx context.Context, in *pb.InfoByIdRequest) (*pb.InfoByIdRequest, error) {
 	slog.Info("Not implemented")
-	return nil, errors.New("Read not implemented")
+	return nil, errors.New("read not implemented")
+}
+
+func (s *Server) InfoByUsername(ctx context.Context, in *pb.InfoByUsernameRequest) (*pb.InfoByUsernameRequest, error) {
+	slog.Info("Not implemented")
+	return nil, errors.New("read not implemented")
 }
 
 func (s *Server) Self(ctx context.Context, in *pb.SelfRequest) (*pb.SelfResponse, error) {

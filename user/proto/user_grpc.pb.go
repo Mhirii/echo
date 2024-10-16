@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	User_Create_FullMethodName = "/user.User/Create"
-	User_Update_FullMethodName = "/user.User/Update"
-	User_Read_FullMethodName   = "/user.User/Read"
-	User_Self_FullMethodName   = "/user.User/Self"
+	User_Create_FullMethodName         = "/user.User/Create"
+	User_Update_FullMethodName         = "/user.User/Update"
+	User_InfoById_FullMethodName       = "/user.User/InfoById"
+	User_InfoByUsername_FullMethodName = "/user.User/InfoByUsername"
+	User_Self_FullMethodName           = "/user.User/Self"
 )
 
 // UserClient is the client API for User service.
@@ -31,7 +32,8 @@ const (
 type UserClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
-	Read(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*ReadResponse, error)
+	InfoById(ctx context.Context, in *InfoByIdRequest, opts ...grpc.CallOption) (*InfoByIdResponse, error)
+	InfoByUsername(ctx context.Context, in *InfoByUsernameRequest, opts ...grpc.CallOption) (*InfoByUsernameResponse, error)
 	Self(ctx context.Context, in *SelfRequest, opts ...grpc.CallOption) (*SelfResponse, error)
 }
 
@@ -63,10 +65,20 @@ func (c *userClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc
 	return out, nil
 }
 
-func (c *userClient) Read(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*ReadResponse, error) {
+func (c *userClient) InfoById(ctx context.Context, in *InfoByIdRequest, opts ...grpc.CallOption) (*InfoByIdResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ReadResponse)
-	err := c.cc.Invoke(ctx, User_Read_FullMethodName, in, out, cOpts...)
+	out := new(InfoByIdResponse)
+	err := c.cc.Invoke(ctx, User_InfoById_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) InfoByUsername(ctx context.Context, in *InfoByUsernameRequest, opts ...grpc.CallOption) (*InfoByUsernameResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(InfoByUsernameResponse)
+	err := c.cc.Invoke(ctx, User_InfoByUsername_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +101,8 @@ func (c *userClient) Self(ctx context.Context, in *SelfRequest, opts ...grpc.Cal
 type UserServer interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
-	Read(context.Context, *ReadRequest) (*ReadResponse, error)
+	InfoById(context.Context, *InfoByIdRequest) (*InfoByIdResponse, error)
+	InfoByUsername(context.Context, *InfoByUsernameRequest) (*InfoByUsernameResponse, error)
 	Self(context.Context, *SelfRequest) (*SelfResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
@@ -107,8 +120,11 @@ func (UnimplementedUserServer) Create(context.Context, *CreateRequest) (*CreateR
 func (UnimplementedUserServer) Update(context.Context, *UpdateRequest) (*UpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedUserServer) Read(context.Context, *ReadRequest) (*ReadResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Read not implemented")
+func (UnimplementedUserServer) InfoById(context.Context, *InfoByIdRequest) (*InfoByIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InfoById not implemented")
+}
+func (UnimplementedUserServer) InfoByUsername(context.Context, *InfoByUsernameRequest) (*InfoByUsernameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InfoByUsername not implemented")
 }
 func (UnimplementedUserServer) Self(context.Context, *SelfRequest) (*SelfResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Self not implemented")
@@ -170,20 +186,38 @@ func _User_Update_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_Read_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReadRequest)
+func _User_InfoById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InfoByIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).Read(ctx, in)
+		return srv.(UserServer).InfoById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: User_Read_FullMethodName,
+		FullMethod: User_InfoById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).Read(ctx, req.(*ReadRequest))
+		return srv.(UserServer).InfoById(ctx, req.(*InfoByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_InfoByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InfoByUsernameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).InfoByUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_InfoByUsername_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).InfoByUsername(ctx, req.(*InfoByUsernameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -222,8 +256,12 @@ var User_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _User_Update_Handler,
 		},
 		{
-			MethodName: "Read",
-			Handler:    _User_Read_Handler,
+			MethodName: "InfoById",
+			Handler:    _User_InfoById_Handler,
+		},
+		{
+			MethodName: "InfoByUsername",
+			Handler:    _User_InfoByUsername_Handler,
 		},
 		{
 			MethodName: "Self",
