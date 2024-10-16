@@ -5,7 +5,7 @@ dev: docker-run watch
 
 watch:
 	@echo "Spinning up docker compose..."
-	docker compose up -d
+	docker compose up pg -d
 	@echo "Running Microservices..."
 	@tmux new-session -d -s echo-air;
 	@for service in $(SERVICES); do \
