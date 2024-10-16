@@ -62,12 +62,12 @@ func (s *Server) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.UpdateRe
 	return res, nil
 }
 
-func (s *Server) InfoById(ctx context.Context, in *pb.InfoByIdRequest) (*pb.InfoByIdRequest, error) {
+func (s *Server) InfoById(ctx context.Context, in *pb.InfoByIdRequest) (*pb.InfoByIdResponse, error) {
 	slog.Info("Not implemented")
 	return nil, errors.New("read not implemented")
 }
 
-func (s *Server) InfoByUsername(ctx context.Context, in *pb.InfoByUsernameRequest) (*pb.InfoByUsernameRequest, error) {
+func (s *Server) InfoByUsername(ctx context.Context, in *pb.InfoByUsernameRequest) (*pb.InfoByUsernameResponse, error) {
 	slog.Info("Not implemented")
 	return nil, errors.New("read not implemented")
 }
