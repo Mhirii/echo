@@ -16,11 +16,6 @@ type Accounts struct {
 	Password string    `gorm:"not null"`
 }
 
-type tokens struct {
-	access  string
-	refresh string
-}
-
 func (a *Accounts) Create() error {
 	hashed, err := lib.Hash(a.Password)
 	if err != nil {

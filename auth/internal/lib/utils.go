@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -19,7 +18,7 @@ func InterfaceToStringMap(input map[string]interface{}) (map[string]string, erro
 		case int, int32, int64, float32, float64, bool:
 			result[key] = fmt.Sprintf("%v", v) // Convert numbers and booleans to string
 		default:
-			return nil, errors.New(fmt.Sprintf("unsupported type for key %s: %T", key, value))
+			return nil, fmt.Errorf("unsupported type for key %s: %T", key, value)
 		}
 	}
 
