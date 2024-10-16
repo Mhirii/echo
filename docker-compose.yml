@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   pg:
     image: postgres:latest
@@ -11,3 +9,48 @@ services:
       - "${DB_PORT}:5432"
     volumes:
       - ./.volumes/test_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  auth:
+    depends_on:
+      pg:
+        condition: service_healthy
+    build:
+      context: ./auth
+    env_file: ./auth/.env
+    ports:
+      - "${AUTH_PORT}:5001"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ACCESS_DURATION_MIN=${JWT_ACCESS_DURATION_MIN}
+      - JWT_REFRESH_DURATION_MIN=${JWT_REFRESH_DURATION_MIN}
+      - DB_HOST=pg
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+  user:
+    depends_on:
+      - auth
+      - pg
+    build:
+      context: ./user
+    env_file: ./user/.env
+    ports:
+      - "${USER_PORT}:5002"
+    environment:
+      - DB_HOST=pg
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - AUTH_ADDR=auth:${AUTH_PORT}
+
+networks:
+  default:
+    driver: bridge
