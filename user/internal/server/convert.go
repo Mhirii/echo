@@ -105,3 +105,25 @@ func convSelfResponse(user database.User) *pb.SelfResponse {
 		Phone:     user.Phone,
 	}
 }
+
+func convInfoByIdResponse(user database.User) *pb.InfoByIdResponse {
+	return &pb.InfoByIdResponse{
+		UserId:    user.ID.String(),
+		Username:  user.Username,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		Phone:     user.Phone,
+	}
+}
+
+func convInfoByUsernameResponse(user database.User) *pb.InfoByUsernameResponse {
+	return &pb.InfoByUsernameResponse{
+		UserId:    user.ID.String(),
+		Username:  user.Username,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		Phone:     user.Phone,
+	}
+}

@@ -63,13 +63,39 @@ func (s *Server) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.UpdateRe
 }
 
 func (s *Server) InfoById(ctx context.Context, in *pb.InfoByIdRequest) (*pb.InfoByIdResponse, error) {
-	slog.Info("Not implemented")
-	return nil, errors.New("read not implemented")
+	authClient := &AuthClient{addr: &s.AuthAddr}
+	_, err := authClient.ParseToken(ctx, in.Token)
+	if err != nil {
+		slog.Error(err)
+		return nil, err
+	}
+
+	user, err := database.FindById(in.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	res := convInfoByIdResponse(user)
+
+	return res, nil
 }
 
 func (s *Server) InfoByUsername(ctx context.Context, in *pb.InfoByUsernameRequest) (*pb.InfoByUsernameResponse, error) {
-	slog.Info("Not implemented")
-	return nil, errors.New("read not implemented")
+	authClient := &AuthClient{addr: &s.AuthAddr}
+	_, err := authClient.ParseToken(ctx, in.Token)
+	if err != nil {
+		slog.Error(err)
+		return nil, err
+	}
+
+	user, err := database.FindByUsername(in.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	res := convInfoByUsernameResponse(user)
+
+	return res, nil
 }
 
 func (s *Server) Self(ctx context.Context, in *pb.SelfRequest) (*pb.SelfResponse, error) {
