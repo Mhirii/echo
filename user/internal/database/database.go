@@ -28,7 +28,6 @@ var (
 	username   = os.Getenv("DB_USERNAME")
 	port       = os.Getenv("DB_PORT")
 	host       = os.Getenv("DB_HOST")
-	schema     = os.Getenv("DB_SCHEMA")
 	dbInstance *dbService
 )
 
@@ -57,7 +56,10 @@ func (s *dbService) Conn() (*dbService, error) {
 	if dbInstance != nil {
 		return dbInstance, nil
 	}
-	New()
+	_, err := New()
+	if err != nil {
+		return nil, err
+	}
 	return dbInstance, nil
 }
 
