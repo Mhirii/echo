@@ -6,12 +6,13 @@ option go_package = "user/proto";
 service User{
 	rpc Create (CreateRequest) returns (CreateResponse){}
 	rpc Update (UpdateRequest) returns (UpdateResponse){}
-	rpc Read (ReadRequest) returns (ReadResponse){}
+	rpc InfoById (InfoByIdRequest) returns (InfoByIdResponse){}
+	rpc InfoByUsername (InfoByUsernameRequest) returns (InfoByUsernameResponse){}
 	rpc Self (SelfRequest) returns (SelfResponse){}
 }
 
 message CreateRequest {
-	string accountId = 1;
+	string token = 1;
 	string username = 2;
 	string firstName = 3;
 	string lastName = 4;
@@ -29,7 +30,7 @@ message CreateResponse {
 }
 
 message UpdateRequest {
-	string accountId = 1;
+	string token = 1;
 	string userId = 2;
 	optional string firstName = 3;
 	optional string lastName = 4;
@@ -46,11 +47,24 @@ message UpdateResponse {
 	optional string phone = 7;
 }
 
-message ReadRequest {
-	optional string userId = 1;
-	optional string username = 3;
+message InfoByIdRequest {
+	string token = 1;
+	string userId = 2;
 }
-message ReadResponse {
+message InfoByIdResponse {
+	string userId = 2;
+	string username = 3;
+	string firstName = 4;
+	string lastName = 5;
+	optional string email = 6;
+	optional string phone = 7;
+}
+
+message InfoByUsernameRequest {
+	string token = 1;
+	string username = 2;
+}
+message InfoByUsernameResponse {
 	string userId = 2;
 	string username = 3;
 	string firstName = 4;
@@ -60,7 +74,7 @@ message ReadResponse {
 }
 
 message SelfRequest {
-	string userId = 1;
+	string token = 1;
 }
 message SelfResponse {
 	string accountId = 1;

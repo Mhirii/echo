@@ -2,72 +2,115 @@ package server
 
 import (
 	"context"
-	"errors"
 
 	"user/internal/database"
 	pb "user/proto"
 
+	"github.com/google/uuid"
 	"github.com/gookit/slog"
 )
 
 type Server struct {
 	pb.UserServer
+	AuthAddr string
 }
 
 func (s *Server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
-	slog.Info("Not implemented")
-	userInput := database.User{
-		AccountID: in.AccountId,
-		Username:  in.Username,
-		FirstName: in.FirstName,
-		LastName:  in.LastName,
+	authClient := &AuthClient{addr: &s.AuthAddr}
+	tokenData, err := authClient.ParseToken(ctx, in.Token)
+	if err != nil {
+		slog.Error(err)
+		return nil, err
 	}
 
-	if in.Email != nil && *in.Email != "" {
-		userInput.Email = in.Email
-	} else {
-		userInput.Email = nil
-	}
+	user := convSignupRequest(in, tokenData.Id)
 
-	if in.Phone != nil && *in.Phone != "" {
-		userInput.Phone = in.Phone
-	} else {
-		userInput.Phone = nil
-	}
-
-	err := userInput.Create()
+	err = user.Create()
 	if err != nil {
 		return nil, err
 	}
 
-	res := &pb.CreateResponse{
-		AccountId: in.AccountId,
-		Username:  in.Username,
-		FirstName: in.FirstName,
-		LastName:  in.LastName,
-	}
-
-	if userInput.Email != nil {
-		res.Email = userInput.Email
-	}
-	if userInput.Phone != nil {
-		res.Phone = userInput.Phone
-	}
+	res := convSignupResponse(&user)
 
 	return res, nil
 }
 
 func (s *Server) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.UpdateResponse, error) {
-	slog.Info("Not implemented")
-	return nil, errors.New("Update not implemented")
+	authClient := &AuthClient{addr: &s.AuthAddr}
+	tokenData, err := authClient.ParseToken(ctx, in.Token)
+	if err != nil {
+		slog.Error(err)
+		return nil, err
+	}
+
+	userUUID, err := uuid.Parse(in.UserId)
+	if err != nil {
+		slog.Error(err)
+		return nil, err
+	}
+
+	user := convUpdateRequest(in, tokenData.Id, userUUID)
+
+	err = user.UpdatePartial()
+	if err != nil {
+		return nil, err
+	}
+
+	res := convUpdateResponse(&user)
+
+	return res, nil
 }
 
-func (s *Server) Read(ctx context.Context, in *pb.ReadRequest) (*pb.ReadResponse, error) {
-	slog.Info("Not implemented")
-	return nil, errors.New("Read not implemented")
+func (s *Server) InfoById(ctx context.Context, in *pb.InfoByIdRequest) (*pb.InfoByIdResponse, error) {
+	authClient := &AuthClient{addr: &s.AuthAddr}
+	_, err := authClient.ParseToken(ctx, in.Token)
+	if err != nil {
+		slog.Error(err)
+		return nil, err
+	}
+
+	user, err := database.FindById(in.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	res := convInfoByIdResponse(user)
+
+	return res, nil
+}
+
+func (s *Server) InfoByUsername(ctx context.Context, in *pb.InfoByUsernameRequest) (*pb.InfoByUsernameResponse, error) {
+	authClient := &AuthClient{addr: &s.AuthAddr}
+	_, err := authClient.ParseToken(ctx, in.Token)
+	if err != nil {
+		slog.Error(err)
+		return nil, err
+	}
+
+	user, err := database.FindByUsername(in.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	res := convInfoByUsernameResponse(user)
+
+	return res, nil
 }
 
 func (s *Server) Self(ctx context.Context, in *pb.SelfRequest) (*pb.SelfResponse, error) {
-	slog.Info("Not implemented")
-	return nil, errors.New("Self not implemented")
+	authClient := &AuthClient{addr: &s.AuthAddr}
+	tokenData, err := authClient.ParseToken(ctx, in.Token)
+	if err != nil {
+		slog.Error(err)
+		return nil, err
+	}
+
+	user, err := database.FindByAccountId(tokenData.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	res := convSelfResponse(user)
+
+	return res, nil
 }

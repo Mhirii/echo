@@ -1,6 +1,10 @@
 package database
 
 import (
+	"reflect"
+
+	"user/internal/lib"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -26,6 +30,12 @@ func (u *User) Update() error {
 	return res.Error
 }
 
+func (u *User) UpdatePartial() error {
+	update := u.toMapInterface()
+	res := dbInstance.db.Model(&u).Updates(update)
+	return res.Error
+}
+
 func (u *User) Delete() error {
 	res := dbInstance.db.Delete(&u)
 	return res.Error
@@ -42,7 +52,7 @@ func FindAll() ([]User, error) {
 
 func FindById(id string) (User, error) {
 	user := User{}
-	res := dbInstance.db.Where("id = ?", id).First(user)
+	res := dbInstance.db.Where("id = ?", id).First(&user)
 	if res.Error != nil {
 		return user, res.Error
 	}
@@ -51,7 +61,7 @@ func FindById(id string) (User, error) {
 
 func FindByUsername(username string) (User, error) {
 	user := User{}
-	res := dbInstance.db.Where("username = ?", username).First(user)
+	res := dbInstance.db.Where("username = ?", username).First(&user)
 	if res.Error != nil {
 		return user, res.Error
 	}
@@ -60,9 +70,41 @@ func FindByUsername(username string) (User, error) {
 
 func FindByAccountId(accountId string) (User, error) {
 	user := User{}
-	res := dbInstance.db.Where("account_id = ?", accountId).First(user)
+	res := dbInstance.db.Where("account_id = ?", accountId).First(&user)
 	if res.Error != nil {
 		return user, res.Error
 	}
 	return user, nil
+}
+
+func (u *User) toMapInterface() map[string]interface{} {
+	userMap := map[string]interface{}{
+		"id":         u.ID,
+		"account_id": u.AccountID,
+	}
+
+	v := reflect.ValueOf(*u)
+	typeOfU := v.Type()
+
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		fieldName := typeOfU.Field(i).Name
+
+		if fieldName == "ID" || fieldName == "AccountID" {
+			continue
+		}
+
+		switch field.Kind() {
+		case reflect.String:
+			if field.String() != "" {
+				userMap[lib.ToSnakeCase(fieldName)] = field.String()
+			}
+		case reflect.Ptr:
+			if !field.IsNil() && field.Elem().Kind() == reflect.String {
+				userMap[lib.ToSnakeCase(fieldName)] = field.Elem().String()
+			}
+		}
+	}
+
+	return userMap
 }
